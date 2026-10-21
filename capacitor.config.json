@@ -1,0 +1,6 @@
+{
+  "appId": "com.slu1pik.rosneft25d",
+  "appName": "Роснефть 2.5D",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

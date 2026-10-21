@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#080b12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>РОСНЕФТЬ 2.5D: Grand Diorama v13.0 | @slu1pik</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<canvas id="isoCanvas"></canvas>
+
+<!-- ВЕРХНИЙ МОБИЛЬНЫЙ HUD -->
+<div class="mobile-top-hud">
+  <div class="hud-header-bar">
+    <div class="brand-left">
+      <div class="rn-badge">РН</div>
+      <div class="brand-titles">
+        <h1>РОСНЕФТЬ 2.5D: GRAND DIORAMA v13.0</h1>
+        <p id="uiRegion">📍 1/8: Оренбургнефть (Сутки • Погода • Z-Буфер)</p>
+      </div>
+    </div>
+    <button class="tg-pill-btn" onclick="openModal('tgModal')">✈️ @slu1pik Х2</button>
+  </div>
+
+  <div class="hud-metrics">
+    <div class="metric-card m-gold"><span>КАПИТАЛ РФ</span><b id="uiMoney">2 500 ₽</b></div>
+    <div class="metric-card m-inc"><span>ДОХОД / СЕК</span><b id="uiIncome">+85 ₽/с</b></div>
+    <div class="metric-card m-sci"><span>НАУКА НИИ</span><b id="uiSci">🔬 35</b></div>
+    <div class="metric-card m-rep"><span>РЕПУТАЦИЯ</span><b id="uiRep">⭐ 50</b></div>
+  </div>
+</div>
+
+<div id="mobileToast">
+  <h4 id="tTitle">🏗️ ОБЪЕКТ МОДЕРНИЗИРОВАН</h4>
+  <p id="tDesc">Описание</p>
+</div>
+
+<!-- ПРАВЫЕ КНОПКИ СУТОК, ПОГОДЫ, ФОНА, РЕЛАКС-МУЗЫКИ, 3D-ЗВУКА И КАМЕРЫ -->
+<div class="floating-tools">
+  <button class="ft-btn gold-ring" id="btnDayCycle" onclick="cycleTimeMode()">🕒 СУТКИ: АВТО</button>
+  <button class="ft-btn cyan-ring" id="btnWeather" onclick="cycleWeatherMode()">🌦️ ПОГОДА: АВТО</button>
+  <button class="ft-btn gold-ring" id="btnShader" onclick="cycleShaderTheme()">🎨 ФОН: ЖЕЛТО-ЧЕРНЫЙ</button>
+  <button class="ft-btn cyan-ring" id="btnMusic" onclick="toggleRelaxMusic()">🎵 РЕЛАКС: ВКЛ</button>
+  <button class="ft-btn" id="btnSound" onclick="toggleAudio()">🔊 3D-ЗВУК: ВКЛ</button>
+  <div id="spatialStatus">🎧 Зона: Общий план</div>
+  <button class="ft-btn" onclick="zoomIso(0.18)">➕ БЛИЖЕ</button>
+  <button class="ft-btn" onclick="zoomIso(-0.18)">➖ ДАЛЬШЕ</button>
+  <button class="ft-btn" onclick="resetIsoCam()">🎯 ЦЕНТР</button>
+  <button class="ft-btn gold-ring" onclick="manualTurboTap()">⚡ ФОРСАЖ</button>
+</div>
+
+<!-- МОБИЛЬНАЯ НИЖНЯЯ ШТОРКА -->
+<div class="phone-sheet" id="phoneSheet">
+  <div class="sheet-top-bar">
+    <div class="tabs-scroller">
+      <button class="tab-pill active" onclick="switchTab('pageBldg', this)">🏗️ ЦЕХА (16)</button>
+      <button class="tab-pill" onclick="switchTab('pageWeb', this)">🕸️ ВЕТКА-ПАУТИНА (25)</button>
+      <button class="tab-pill" onclick="switchTab('pageFleet', this)">🏎️ АВИА И АВТО (16)</button>
+      <button class="tab-pill" onclick="switchTab('pageReg', this)">🌍 РЕГИОНЫ (8)</button>
+      <button class="tab-pill" onclick="switchTab('pageSec', this)">🕵️ ПАСХАЛКИ</button>
+    </div>
+
+    <div class="mult-pill-group">
+      <button class="mp-btn active" onclick="setBuyMult(1, this)">x1</button>
+      <button class="mp-btn" onclick="setBuyMult(5, this)">x5</button>
+      <button class="mp-btn" onclick="setBuyMult(10, this)">x10</button>
+      <button class="mp-btn" onclick="setBuyMult('MAX', this)">MAX</button>
+    </div>
+
+    <button class="sheet-min-btn" id="sheetToggleBtn" onclick="toggleSheet()">▼</button>
+  </div>
+
+  <div class="sheet-scroll-area">
+    <div class="sheet-page active" id="pageBldg">
+      <div class="mobile-cards-list" id="bldgList"></div>
+    </div>
+
+    <div class="sheet-page" id="pageWeb">
+      <div class="mobile-web-wrap" id="mobileWebWrap">
+        <svg id="webSvgLines"></svg>
+        <div id="webNodesLayer"></div>
+      </div>
+    </div>
+
+    <div class="sheet-page" id="pageFleet">
+      <div class="mobile-cards-list" id="fleetList"></div>
+    </div>
+
+    <div class="sheet-page" id="pageReg">
+      <div class="mobile-cards-list" id="regList"></div>
+    </div>
+
+    <div class="sheet-page" id="pageSec">
+      <div class="mobile-cards-list" id="secList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛКА @SLU1PIK -->
+<div class="modal-wrap" id="tgModal">
+  <div class="modal-box">
+    <h3>✈️ МЕДИА-ИМПЕРИЯ @SLU1PIK</h3>
+    <p>Подпишись на Telegram-канал <b>@slu1pik</b>! Введи промокод <b>SLU1PIK</b> для получения <b>+50 000 ₽</b>, <b>+250 🔬 Науки</b> для Ветки-Паутинки и <b>Х2 Форсажа</b>:</p>
+    <input type="text" id="promoInp" class="code-inp" value="SLU1PIK">
+    <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+      <button class="ic-buy-btn" onclick="claimPromo()">АКТИВИРОВАТЬ КОД</button>
+      <a href="https://t.me/slu1pik" target="_blank" class="ic-buy-btn" style="background:#0088cc; color:#fff; text-decoration:none;" onclick="startVipBoost()">ОТКРЫТЬ @slu1pik</a>
+      <button class="ic-buy-btn" style="background:#334155; color:#fff;" onclick="closeModal('tgModal')">ЗАКРЫТЬ</button>
+    </div>
+  </div>
+</div>
+
+  <script src="./script.js"></script>
+</body>
+</html>
